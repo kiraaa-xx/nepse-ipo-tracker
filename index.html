@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEPSE IPO Tracker — by Kris and Claude</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- INTRO SCREEN -->
+  <div id="intro" class="intro">
+    <div class="intro-inner">
+      <div class="intro-icon"><i class="fa-solid fa-chart-line"></i></div>
+      <h1 class="intro-title">NEPSE<span class="accent">IPO</span></h1>
+      <p class="intro-sub">Nepal Stock Exchange · IPO Tracker</p>
+      <div class="intro-loader">
+        <div class="loader-bar"></div>
+      </div>
+      <p class="intro-credit">Built by <span class="accent">Kris</span></p>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" class="app hidden">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div class="nav-brand">
+        <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
+        <span class="nav-title">NEPSE<span class="accent">IPO</span></span>
+      </div>
+      <div class="nav-actions">
+        <button class="btn-notify" id="notifyBtn" title="Enable Notifications">
+          <i class="fa-solid fa-bell"></i> Notify Me
+        </button>
+        <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+          <i id="themeIcon" class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-badge"><i class="fa-solid fa-flag"></i> Live NEPSE Data</div>
+        <h1 class="hero-title">Track Every<br /><span class="gradient-text">Nepal IPO</span></h1>
+        <p class="hero-desc">Get instant alerts on new ordinary share IPOs, view open applications, and track past IPO results — all in one place.</p>
+        <div class="hero-stats" id="heroStats">
+          <div class="stat-card">
+            <span class="stat-num" id="statOpen">—</span>
+            <span class="stat-label">Open Now</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="statUpcoming">—</span>
+            <span class="stat-label">Upcoming</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="statClosed">—</span>
+            <span class="stat-label">Recently Closed</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="chart-art">
+          <svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="10,100 40,70 70,85 100,40 130,55 160,20 190,30" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" class="chart-line"/>
+            <polyline points="10,100 40,70 70,85 100,40 130,55 160,20 190,30 190,110 10,110" fill="var(--accent-alpha)" class="chart-fill"/>
+            <circle cx="100" cy="40" r="5" fill="var(--accent)" class="chart-dot"/>
+            <circle cx="160" cy="20" r="5" fill="var(--accent)" class="chart-dot"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TABS -->
+      <div class="tabs-wrap">
+        <div class="tabs">
+          <button class="tab active" data-tab="open"><i class="fa-solid fa-circle-check"></i> Open Now</button>
+          <button class="tab" data-tab="upcoming"><i class="fa-solid fa-clock"></i> Upcoming</button>
+          <button class="tab" data-tab="closed"><i class="fa-solid fa-flag-checkered"></i> Closed</button>
+        </div>
+        <button class="refresh-btn" id="refreshBtn" title="Refresh Data">
+          <i class="refresh-icon fa-solid fa-rotate"></i> Refresh
+        </button>
+      </div>
+
+      <!-- IPO GRIDS -->
+      <div class="tab-content active" id="tab-open">
+        <div class="ipo-grid" id="grid-open"></div>
+        <div class="empty-state hidden" id="empty-open">
+          <div class="empty-icon"><i class="fa-solid fa-moon"></i></div>
+          <p>No IPOs currently open.</p>
+        </div>
+      </div>
+
+      <div class="tab-content hidden" id="tab-upcoming">
+        <div class="ipo-grid" id="grid-upcoming"></div>
+        <div class="empty-state hidden" id="empty-upcoming">
+          <div class="empty-icon"><i class="fa-regular fa-calendar"></i></div>
+          <p>No upcoming IPOs found.</p>
+        </div>
+      </div>
+
+      <div class="tab-content hidden" id="tab-closed">
+        <div class="ipo-grid" id="grid-closed"></div>
+        <div class="empty-state hidden" id="empty-closed">
+          <div class="empty-icon"><i class="fa-solid fa-box-archive"></i></div>
+          <p>No recent closed IPOs.</p>
+        </div>
+      </div>
+
+      <!-- LOADING -->
+      <div class="loading-wrap" id="loadingWrap">
+        <div class="spinner"></div>
+        <p>Fetching latest IPO data from Merolagani...</p>
+      </div>
+
+      <!-- ERROR -->
+      <div class="error-wrap hidden" id="errorWrap">
+        <div class="error-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <h3>Could not fetch live data</h3>
+        <p>Showing sample/cached data. Check your internet or try refreshing.</p>
+        <button class="btn-primary" onclick="loadData()">Try Again</button>
+      </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <p>Data sourced from <a href="https://merolagani.com" target="_blank">Merolagani.com</a> & <a href="https://sharesansar.com" target="_blank">ShareSansar.com</a></p>
+        <p class="footer-credit">
+          Crafted with ❤️ by <strong>Kris Chand and Claude</strong> &nbsp;·&nbsp; Kailai, Dhangadhi-3 &nbsp;·&nbsp; 
+          <a href="https://github.com" target="_blank">GitHub</a>
+        </p>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
